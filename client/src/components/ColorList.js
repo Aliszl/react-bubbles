@@ -3,6 +3,7 @@ import React, { useState } from "react";
 import {axiosWithAuth} from '../auth/axiosWithAuth';
 
 const initialColor = {
+  id:null,
   color: "",
   code: { hex: "" }
 };
@@ -11,7 +12,7 @@ const ColorList = ({ colors, updateColors }) => {
   console.log(colors);
   const [editing, setEditing] = useState(false);
   const [colorToEdit, setColorToEdit] = useState(initialColor);
-  const [currentColorId, setCurrentColorId] = useState(null);
+  // const [currentColorId, setCurrentColorId] = useState(null);
 
   const editColor = color => {
     setEditing(true);
@@ -23,13 +24,18 @@ const ColorList = ({ colors, updateColors }) => {
     // Make a put request to save your updated color
     // think about where will you get the id from...
     // where is is saved right now?
+    // axiosWithAuth().put(`http://localhost:5000/api/colors/${id}`, { color, code})
+    // .then(res => {
+    //   setColorToEdit(null);
+    //   getAllQuotes();
+    // })
+    // .catch(error => {
+    //   debugger
+    //   console.error(error);
+    // });
+// };
   };
-  const getCurrentColor = () => {
-    // 3- We need a utility function that can look at the
-    // `currentQuoteId` and fish out the complete quote
-    // object from the `quotes` slice of state
-    return colors.find(color => color.id === currentColorId);
-  };
+ 
   const deleteColor = (id) => {
     // make a delete request to delete this color
 
@@ -37,8 +43,8 @@ const ColorList = ({ colors, updateColors }) => {
       .delete(`http://localhost:5000/api/colors/${id}`)
       .then(response => {
         console.log(response)
-      setCurrentColorId("");
-    setEditing(colors.filter(color=>color.id !==id))
+      // setCurrentColorId("");
+    setColorToEdit(colors.filter(color=>color.id !==id))
     console.log(colors)
     })
 
