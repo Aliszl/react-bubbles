@@ -1,15 +1,14 @@
 import React, { useState } from "react";
 // import axios from "axios";
-import {axiosWithAuth} from '../auth/axiosWithAuth';
+import { axiosWithAuth } from "../auth/axiosWithAuth";
 
 const initialColor = {
-  id:null,
+  id: null,
   color: "",
   code: { hex: "" }
 };
 
-const ColorList = ({ colors, updateColors }) => {
-  
+const ColorList = ({ colors, updateColors, fetchColors }) => {
   const [editing, setEditing] = useState(false);
   const [colorToEdit, setColorToEdit] = useState(initialColor);
   // const [currentColorId, setCurrentColorId] = useState(null);
@@ -19,38 +18,39 @@ const ColorList = ({ colors, updateColors }) => {
     setColorToEdit(color);
   };
 
-  const saveEdit = (id, body) => {
-    
+  const saveEdit = e => {
+    e.preventDefault();
+    console.log(colorToEdit);
     // Make a put request to save your updated color
     // think about where will you get the id from...
     // where is is saved right now?
-    axiosWithAuth().put(`http://localhost:5000/api/colors/${id}`)
-    .then(res => {
-      setColorToEdit(null);
-      
-    })
-    .catch(error => {
-      debugger
-      console.error(error);
-    });
-
-  };
- // setCurrentColorId("");
-  const deleteColor = (id) => {
-    // make a delete request to delete this color
-// console.log(id);
     axiosWithAuth()
-      .delete(`http://localhost:5000/api/colors/${id}`)
-      .then(response => {   
-    updateColors(colors.filter(color=>color.id !==id))
-    })
+      .put(`http://localhost:5000/api/colors/${colorToEdit.id}`, colorToEdit)
+      .then(res => {
+        setEditing(false);
+        setColorToEdit(initialColor);
+        fetchColors();
+      })
+      .catch(error => {
+        debugger;
+        console.error(error);
+      });
+  };
+  // setCurrentColorId("");
+  const deleteColor = id => {
+    // make a delete request to delete this color
+    // console.log(id);
+    axiosWithAuth()
+      .delete(`http://localhost:5000/api/colors/${id}, colors`)
+      .then(response => {
+        updateColors(colors.filter(color => color.id !== id));
+      })
 
       .catch(err => console.log(err));
   };
-  console.log(colorToEdit);
+
   return (
     <div className="colors-wrap">
-    {console.log(colors)}
       <p>colors</p>
       <ul>
         {colors.map(color => (
@@ -60,7 +60,6 @@ const ColorList = ({ colors, updateColors }) => {
                 className="delete"
                 onClick={e => {
                   e.stopPropagation();
-                  console.log(color);
                   deleteColor(color.id);
                 }}
               >
@@ -75,8 +74,9 @@ const ColorList = ({ colors, updateColors }) => {
           </li>
         ))}
       </ul>
+
       {editing && (
-        <form onSubmit={saveEdit}>
+        <form onSubmit={e => saveEdit(e)}>
           <legend>edit color</legend>
           <label>
             color name:
@@ -84,9 +84,12 @@ const ColorList = ({ colors, updateColors }) => {
               onChange={e =>
                 setColorToEdit({ ...colorToEdit, color: e.target.value })
               }
+              type="text"
+              name="color"
               value={colorToEdit.color}
             />
           </label>
+
           <label>
             hex code:
             <input
