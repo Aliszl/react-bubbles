@@ -35,24 +35,22 @@ const ColorList = ({ colors, updateColors }) => {
     // });
 // };
   };
- 
+ // setCurrentColorId("");
   const deleteColor = (id) => {
     // make a delete request to delete this color
-
+console.log(id);
     axiosWithAuth()
       .delete(`http://localhost:5000/api/colors/${id}`)
-      .then(response => {
-        console.log(response)
-      // setCurrentColorId("");
-    setColorToEdit(colors.filter(color=>color.id !==id))
-    console.log(colors)
+      .then(response => {   
+    updateColors(colors.filter(color=>color.id !==id))
     })
 
       .catch(err => console.log(err));
   };
-
+  console.log(colorToEdit);
   return (
     <div className="colors-wrap">
+    {console.log(colors)}
       <p>colors</p>
       <ul>
         {colors.map(color => (
@@ -62,7 +60,8 @@ const ColorList = ({ colors, updateColors }) => {
                 className="delete"
                 onClick={e => {
                   e.stopPropagation();
-                  deleteColor(color);
+                  console.log(color);
+                  deleteColor(color.id);
                 }}
               >
                 x
